@@ -1,0 +1,115 @@
+-- SOLUCION DE DISEÑO 
+ALTER TABLE Cliente
+ALTER COLUMN nombre VARCHAR(100);
+
+ALTER TABLE Cliente
+ALTER COLUMN apellido VARCHAR(100);
+GO
+-- CONSULTA 4 (Ignora espacios y acentos)
+SELECT
+    T1.id_factura,
+    T1.fecha AS FechaCompra,
+    T2.nombre AS NombreCliente,
+    T4.nombre AS ProductoComprado,
+    T3.cantidad
+FROM
+    Factura T1
+INNER JOIN
+    Cliente T2 ON T1.id_cliente = T2.id_cliente
+INNER JOIN
+    Detalle T3 ON T1.id_detalle = T3.id_detalle
+INNER JOIN
+    Producto T4 ON T3.id_producto = T4.id_producto
+WHERE
+    -- 1. TRIM: Quita espacios al inicio y al final.
+    -- 2. COLLATE: Fuerza una comparaci�n que no distinga acentos (AS) ni may�sculas/min�sculas (CI).
+    (TRIM(T2.nombre) + ' ' + TRIM(T2.apellido)) COLLATE SQL_Latin1_General_CP1_CI_AS IN (
+        'Valentina Anastasia Huerta Corral', 
+        'Zayra Manuela G�mez L�pez', 
+        'Dante Eduardo Dolores Meza',
+        'Ana Maribel Cedillo N��ez', 
+        'Rodrigo Ismael Silva Ugarte'
+    )
+ORDER BY
+    T2.nombre, T2.apellido, T1.fecha DESC;
+-- CONSULTA 5 (forzada ya que el formato esta en tex :c)
+SELECT TOP 1
+    CONVERT(VARCHAR(MAX), P.nombre) AS ProductoMasVendido,
+    SUM(D.cantidad) AS TotalVendido
+FROM
+    Detalle D
+INNER JOIN
+    Producto P ON D.id_producto = P.id_producto
+GROUP BY
+    CONVERT(VARCHAR(MAX), P.nombre) 
+ORDER BY
+    TotalVendido DESC;
+SELECT TOP 1
+    nombre,
+    stock
+FROM
+    Producto
+ORDER BY
+    stock DESC;
+
+SELECT id_factura, fecha, id_cliente
+FROM Factura
+ORDER BY fecha ASC;
+SELECT id_cliente, nombre, apellido
+FROM Cliente
+ORDER BY nombre ASC, apellido ASC;
+-- CONSULTA 9 
+SELECT
+    C.nombre AS Categoria,
+    P.nombre AS Producto
+FROM
+    Producto P
+INNER JOIN
+    Categoria C ON P.id_categoria = C.id_categoria
+WHERE
+    C.nombre IN ('Falda', 'Pantal�n', 'Chamarra', 'Zapatos', 'Accesorios')
+ORDER BY
+    Categoria, Producto;
+SELECT
+    nombre AS Sucursal,
+    NombreEncargado AS Encargado
+FROM
+    Sucursal
+ORDER BY
+    Sucursal;
+
+SELECT
+    E.nombre AS NombreEmpleado,
+    S.nombre AS Sucursal
+FROM
+    Empleados E
+INNER JOIN Sucursal S ON E.id_sucursal = S.id_sucursal
+WHERE
+    S.nombre LIKE '%Constituci�n%';
+SELECT
+    nombre,
+    apellido,
+    DATEDIFF(YEAR, fec_nac, GETDATE()) AS EdadActual
+FROM
+    Cliente
+WHERE
+    DATEDIFF(YEAR, fec_nac, GETDATE()) > 30
+ORDER BY
+    apellido, nombre;
+use AkirasBoutiques
+go
+
+SELECT DISTINCT id_cliente
+from factura
+where year(fecha) = 2021
+
+select distinct id_cliente 
+from factura
+where year(fecha) = 2022
+
+
+select distinct id_cliente
+from factura 
+where year(fecha) = 2021 and MONTH(fecha) = 12 
+
+
